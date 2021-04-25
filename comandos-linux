@@ -1,0 +1,98 @@
+Crear claves ssh
+  cd ~/.ssh
+  .ssh ssh-keygen -t rsa
+    colocar la ruta y nombre por defecto:
+      id_rsa => id_rsa_secure_server
+      pulsar enter
+          Esto genera dos claves una publica y una privada
+          
+      copiamos la clave publica en memoria
+          cat id_rsa_secure_server.pub | pbcopy .
+          
+      agregamos la clave 
+        ssh-add id_rsa_secure_server
+        
+        en un terminal nos conectamos al servidor 
+          ssh root@64.225.70.118
+          
+          
+      
+
+Escalar susuario:
+  sudo su
+
+Documentación 
+  php 
+    https://www.youtube.com/watch?v=VsfFzeO8Mvg
+
+Buscar desde la raíz del sistema un archivo
+  find / -name php.ini
+  Notas: Retorna las rutas absolutas de los archivos
+  
+Con nano editar el archivo
+  nano xx/xx/xx/php.ini
+  
+  Para buscar dentro del archivo:
+    Importante:
+      deshabilitar las conexiones remotas hacia php desde la url, para que de esta manera el contenido que nos intentes ejecutar desde forma remota no se pueda 
+      realizar y unicamente se pueda ejecutar contenido de forma local
+    
+    
+      crtl + w
+        allow_url_fopen
+            colocarla en off
+            
+     Deben de quedar así los siguientes parametros:
+        max_execution_time = 30
+     
+        max_input_time = 30
+        
+        memory_limit = 8M
+        
+        expose_php = on  =>  expose_php = off
+        
+        Restringir los datos de entrada: 
+          post_max_siza = 8M  => post_max_siza = 2M
+        
+        ;max_input_vars=1000  => max_input_vars=100
+          
+        habilitar los log de errores:
+          log_errors = on 
+          
+          editar la ruta del archivo:
+            error_log = /var/log/php_errors.log
+            
+         
+         restringir la subida de archivo a nuestros app
+          file_uploads = on
+          upload_max_filesize = 2M
+          
+          
+        El temporal donde todos los usuqios del sistema almacenan los archivo
+          upload_tmp_dir = /tmp
+          
+        Funciones de php que deben dashabilitarse dependiendo si no se utilizan en la aplicación
+          disable_fucntions = ini_set.php_uname
+          
+          
+  reiiniciar el servicio de apache:
+    systemctl restart apache2
+    
+    
+    
+ Securizar la base de datos MySql
+    mysql_secure_installation
+      solicita una clave darle enter:
+      solicita un nuevo password
+      puslar y para eliminar los usuarios anonimos 
+      usuario root accesar de forma remota N
+      elminar la base de datos de test 
+      acutlizar el privilegio de las tablas
+      
+      
+      
+Modificar las iptables
+  listar las reglas por default:
+      iptables -L
+        todas aceptadas:
+          

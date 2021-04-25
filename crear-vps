@@ -1,0 +1,118 @@
+Dcumentación
+  https://www.youtube.com/watch?v=s_Zi6nE9hPc
+  
+  apt-get update && apt-get upgrade -y
+  
+1 Crear claves ssh
+  cd ~/.ssh
+  .ssh ssh-keygen -t rsa
+    colocar la ruta y nombre por defecto:
+      id_rsa => id_rsa_secure_server
+      pulsar enter
+          Esto genera dos claves una publica y una privada
+          
+      copiamos la clave publica en memoria
+          cat id_rsa_secure_server.pub | pbcopy .
+          
+      agregamos la clave 
+        ssh-add id_rsa_secure_server
+        
+        en un terminal nos conectamos al servidor 
+          ssh root@64.225.70.118
+          
+Ejecutar comandos:
+  apt-get update
+  apt-get upgrade
+  
+2 Deshabilitar la autenticación por contraseña
+  cd /etc/ssh
+  sudo nano ssdh_config
+    ctrl+w
+      PasswordAuthentication no
+      ChallengeResponseAutentication no
+      UsePAM no
+    
+   reiniciar el ssh
+    systemctl restart sshd   
+
+3 Deshablitar el root login y crear uno nuevo 
+  adduser hdepablos
+  colocamos una contraseña
+    Colocamos el nombre cte Héctor depablos
+    enter ...
+    Y
+    
+  usermod -aG sudo hdepablos
+  
+  ahora entramos con ese usuario
+    su - hdepablos
+    
+    ll
+    
+    mkdir .ssh 
+    cd .ssh
+    
+    nano authorized_keys
+      copiamos la clave ssh publica y la pegamos en este archivo
+      cd ~/.ssh
+      cat id_rsa_secure_server.pub | pbcopy .
+      
+    hacemos un cat  
+      .ssh cat authorized_keys
+    
+    exit ya estamos en root
+    
+    
+    Editamos el ssh importante el mismo orden en que estamos
+      cd /etc/ssh
+      sudo nano ssdh_config
+        ctrl+w
+          PermitRootLogin no
+      
+   reiniciar el ssh
+    systemctl restart sshd   
+    
+  
+ 4 Configurar el UFW
+    habilitar el ssh
+      sudo ufw allow OpenSSH
+    habilitar el puerto 80 http
+      sudo ufw allow 80/tcp
+    habilitar el puerto 443 https
+      sudo ufw allow 443/tcp
+    habilitar el ufw el firewall activo
+      sudo ufw enable
+        y
+      sudo ufw status
+    Cualquier usuario que quiera conectarse por default no pueda hacerlo
+      sudo ufw default deny incoming
+    Cualquier aplicación que tengamos en el servidor pued conectarse con el mundo exterior
+      sudo ufw default allow outgoing
+    Reiniciar al cortafuego 
+      sudo ufw reload
+    
+5 Cambiar sysctl.conf
+    sudo nano /etc/sysctl.conf
+      descomentar 
+        net.ipv4.conf.default.rp_filter=1
+        net.ipv4.conf.all.rp_filter=1
+        net.ipv4.conf.send_redirects = 0
+        net.ipv4.conf.all.accept_source_route = 0
+        net.ipv6.conf.all.accept_source_route = 0
+        net.ipv4.conf.all.log_martians = 1
+        
+ 7  Configurar fail2bam
+      sudo apt install fail2bam
+      sudo systemctl enable fail2bam
+      sudo systemctl start fail2bam
+      sudo systemctl status fail2bam
+        verificar status activo y running
+        
+      reiniciar el servidor 
+        sudo reboot
+
+
+sudo do-release-upgrade
+apt-cache policy docker-ce
+sudo apt install docker-ce -y
+sudo apt install docker-compose -y
